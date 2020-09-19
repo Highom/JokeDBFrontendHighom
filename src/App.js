@@ -1,28 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import { Button } from '@material-ui/core';
+import {TableCell, TableBody,Table, Typography, Button, TableContainer, TableHead, TableRow} from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Paper from '@material-ui/core/Paper';
+const axios = require('axios');
 
 function App() {
+  const [jokes,setJokes] = useState([]);
+ let api = "http://localhost:8080/sql/jokes";
 
-function createData(id, text, rating, date) {
-  return { id, text, rating, date };
-}
+ 
+  useEffect( () => {
+    axios.get(api)
+    .then(res => { setJokes(res.data)})
+    .catch( err => {console.log(err)});
+  }, []);
 
-  const rows = [
-    createData(1, 'joke 1', 3, 24),
-    createData(2, 'joke 2', 2, 37),
-    createData(3, 'joke 3', 1, 24),
-    createData(4, 'joke 4', 4, 67),
-  ];
+  const onDelete = (id) => {
+    axios.delete(api + "/" + id).then(
+      axios.get(api)
+      .then(res => { setJokes(res.data)})
+      .catch( err => {console.log(err)})
+    )
+  }
 
   return (
     <div className="App">
@@ -34,24 +34,32 @@ function createData(id, text, rating, date) {
         <TableHead>
           <TableRow>
             <TableCell>Id</TableCell>
-            <TableCell align="right">text</TableCell>
-            <TableCell align="right">rating</TableCell>
-            <TableCell align="right">date</TableCell>
-            <TableCell align="right">Delete</TableCell>
+            <TableCell>text</TableCell>
+            <TableCell>rating</TableCell>
+            <TableCell>date</TableCell>
+            <TableCell>Edit</TableCell>
+            <TableCell>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id}>
+          {jokes.map((joke) => (
+            <TableRow key={joke.id}>
               <TableCell component="th" scope="row">
-                {row.id}
+                {joke.id}
               </TableCell>
-              <TableCell align="right">{row.text}</TableCell>
-              <TableCell align="right">{row.rating}</TableCell>
-              <TableCell align="right">{row.date}</TableCell>
-              <TableCell align="right">
+              <TableCell>{joke.text}</TableCell>
+              <TableCell>{joke.rating}</TableCell>
+              <TableCell>{joke.date}</TableCell>
+              <TableCell>
+                <Button variant="contained"
+                  color="primary">
+                  Edit
+                </Button>
+              </TableCell>
+              <TableCell>
                 <Button variant="contained"
                   color="secondary"
+                  onClick={onDelete(joke.id)}
                   startIcon={<DeleteIcon />}>
                   Delete
                 </Button>
