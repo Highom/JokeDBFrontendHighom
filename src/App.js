@@ -16,12 +16,14 @@ function App() {
     .catch( err => {console.log(err)});
   }, []);
 
-  const onDelete = (id) => {
-    axios.delete(api + "/" + id).then(
-      axios.get(api)
-      .then(res => { setJokes(res.data)})
-      .catch( err => {console.log(err)})
-    )
+  const onDelete = id => {
+      if (window.confirm("Are you sure you want to delete this?")) {
+        axios.delete(`${api}/${id}`).then(
+          axios.get(api)
+          .then(res => { setJokes(res.data)})
+          .catch( err => {console.log(err)})
+        ) 
+      }
   }
 
   return (
@@ -59,7 +61,7 @@ function App() {
               <TableCell>
                 <Button variant="contained"
                   color="secondary"
-                  onClick={onDelete(joke.id)}
+                  onClick={() => onDelete(joke.id)}
                   startIcon={<DeleteIcon />}>
                   Delete
                 </Button>
