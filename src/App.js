@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import Axios from 'axios';
 import './App.css';
 import {TableCell, TableBody,Table, Button, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, TextField, Select} from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Paper from '@material-ui/core/Paper';
-const axios = require('axios');
 
 function App() {
+  const textFieldRef = useRef();
+  const ratingFieldRef = useRef();
   const [jokes,setJokes] = useState([]);
   const [request, setRequest] = useState([]);
-  const [database, setDatabase] = React.useState("sql")
-  const [open, setOpen] = React.useState(false);
+  const [database, setDatabase] = useState("sql")
+  const [open, setOpen] = useState(false);
   let api = `http://localhost:8080/${database}/jokes`;
 
  
   useEffect( () => {
-    axios.get(api)
+    Axios.get(api)
     .then(res => { setJokes(res.data)})
     .catch( err => {console.log(err)});
   }, []);
 
   const onDelete = id => {
       if (window.confirm("Are you sure you want to delete this?")) {
-        axios.delete(`${api}/${id}`).then(
-          axios.get(api)
+        Axios.delete(`${api}/${id}`).then(
+          Axios.get(api)
           .then(res => { setJokes(res.data)})
           .catch( err => {console.log(err)})
         ) 
@@ -59,11 +61,10 @@ function App() {
 
  const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(event);
-    axios({
+    Axios({
       method: request.type,
       url: request.path,
-      data: event.target.value
+      data: {text: textFieldRef.current.value, rating: ratingFieldRef.current.value}
     }).catch( err => {console.log(err)});
     handleClose();
  }
@@ -94,20 +95,24 @@ function App() {
         <DialogContent>
           <form onSubmit={handleSubmit}>
             <TextField
+              name="text"
               autoFocus
               margin="dense"
               id="text"
               label="Joke"
               fullWidth
               defaultValue={request.text}
+              inputRef={textFieldRef}
             />
             <TextField
+              name="rating"
               margin="dense"
               id="rating"
               label="Rating"
               type="number"
               fullWidth
               defaultValue={request.rating}
+              inputRef={ratingFieldRef}
             />
             <div>
             <Button onClick={handleClose}>
