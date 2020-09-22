@@ -23,11 +23,9 @@ function App() {
 
   const onDelete = id => {
       if (window.confirm("Are you sure you want to delete this?")) {
-        Axios.delete(`${api}/${id}`).then(
-          Axios.get(api)
-          .then(res => { setJokes(res.data)})
+        Axios.delete(`${api}/${id}`)
+        .then(res => {setJokes(res.data)})
           .catch( err => {console.log(err)})
-        ) 
       }
   }
 
@@ -65,7 +63,8 @@ function App() {
       method: request.type,
       url: request.path,
       data: {text: textFieldRef.current.value, rating: ratingFieldRef.current.value}
-    }).catch( err => {console.log(err)});
+    }).then(res => {setJokes(res.data)})
+    .catch( err => {console.log(err)});
     handleClose();
  }
 
