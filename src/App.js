@@ -21,6 +21,12 @@ function App() {
     .catch( err => {console.log(err)});
   }, []);
 
+  useEffect( () => {
+    Axios.get(api)
+    .then(res => { setJokes(res.data)})
+    .catch( err => {console.log(err)});
+  }, [database])
+
   const onDelete = id => {
       if (window.confirm("Are you sure you want to delete this?")) {
         Axios.delete(`${api}/${id}`)
@@ -73,12 +79,9 @@ function App() {
     <div className="App">
       <Select
         native
+        id="db"
         value={database}
         onChange={handleChange}
-        inputProps={{
-          name: 'Database',
-          id: 'DatabaseSelect',
-        }}
       >
         <option value="sql">SQL</option>
         <option value="mdb">MDB</option>
